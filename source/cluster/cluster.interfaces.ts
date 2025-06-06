@@ -6,7 +6,6 @@ export interface RedisClusterConfigFactory {
 }
 
 export interface RedisClusterAsyncConfig extends Pick<ModuleMetadata, 'imports'> {
-    name?: string;
     inject?: Array<InjectionToken | OptionalFactoryDependency>;
     useExisting?: Type<RedisClusterConfigFactory>;
     useFactory?: (...args: any[]) => Promise<RedisClusterConfig> | RedisClusterConfig;

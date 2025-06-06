@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
 import { Redis } from 'ioredis';
 import { RedisClientModule } from '../../source/client/client.module';
-import { RedisClientUtilities } from '../../source/client/client.utilities';
+import { RedisClientTokens } from '../../source/client/client.tokens';
 import { TestingDocument, TestingRedisService } from './tests.types';
 
 export class TestingRedisClientFactory {
@@ -30,7 +30,7 @@ export class TestingRedisClientFactory {
                 },
                 read: async(id): Promise<TestingDocument | null> => {
                     const value = await client.get(id);
-                    if (value) {
+                    if (typeof value === 'string') {
                         return JSON.parse(value) as TestingDocument;
                     }
                     return null;
@@ -41,7 +41,7 @@ export class TestingRedisClientFactory {
                 },
             }),
             inject: [
-                RedisClientUtilities.getConnectionToken(),
+                RedisClientTokens.getConnection(),
             ],
         };
 
@@ -59,6 +59,8 @@ export class TestingRedisClientFactory {
         });
 
         this._testing = await tModule.compile();
+        this._testing = await this._testing.init();
+
         this._testing.enableShutdownHooks();
     }
 
@@ -67,7 +69,7 @@ export class TestingRedisClientFactory {
         await this._container.stop();
     }
 
-    public getService(): TestingRedisService {
+    public get service(): TestingRedisService {
         return this._testing.get<TestingRedisService>(this._token);
     }
 }

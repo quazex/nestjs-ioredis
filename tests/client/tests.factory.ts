@@ -30,7 +30,7 @@ export class TestingRedisClientFactory {
                 },
                 read: async(id): Promise<TestingDocument | null> => {
                     const value = await client.get(id);
-                    if (value) {
+                    if (typeof value === 'string') {
                         return JSON.parse(value) as TestingDocument;
                     }
                     return null;

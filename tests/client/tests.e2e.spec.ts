@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
 import { TestingRedisClientFactory } from './tests.factory';
 import { TestingDocument } from './tests.types';
 
-describe('Redis > E2E', () => {
+describe('Redis Standalone > E2E', () => {
     const tModule = new TestingRedisClientFactory();
 
     beforeAll(tModule.init.bind(tModule));

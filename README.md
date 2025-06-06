@@ -4,7 +4,6 @@ Core features:
 
 - Based on [official ioredis client for NodeJS](https://github.com/redis/ioredis);
 - Includes standalone and cluster clients;
-- Supports multiple instances;
 - Covered with unit and e2e tests;
 - Basic module without unnecessary boilerplate.
 
@@ -27,12 +26,11 @@ import { Module } from '@nestjs/common';
 import { RedisClientModule } from '@quazex/nestjs-ioredis';
 
 @Module({
-  imports: [
-    RedisClientModule.forRoot({
-        name: 'my-ioredis', // optional
-        url: 'redis://localhost:6379/1',
-    }),
-  ],
+    imports: [
+        RedisClientModule.forRoot({
+            url: 'redis://localhost:6379/1',
+        }),
+    ],
 })
 export class AppModule {}
 ```
@@ -48,14 +46,14 @@ import { Redis } from 'ioredis';
 
 @Injectable()
 export class StorageService {
-    constructor(@InjectRedisClient() redisClient: Redis) {}
+    constructor(@InjectRedisClient() private readonly client: Redis) {}
 
     async write(key: string, value: object) {
-        await this.redisClient.set(key, value);
+        await this.client.set(key, value);
     }
 
     async read(key: string) {
-        return this.redisClient.get(key);
+        return this.client.get(key);
     }
 }
 ```
@@ -68,9 +66,12 @@ If you need dynamic configuration, use `forRootAsync`:
 @Module({
     imports: [
         RedisClientModule.forRootAsync({
-            useFactory: async () => ({
-                url: process.env.REDIS_URL,
+            useFactory: async (config: SomeConfigProvider) => ({
+                url: config.REDIS_URL,
             }),
+            inject: [
+                SomeConfigProvider,
+            ],
         }),
     ],
 })
@@ -79,21 +80,16 @@ export class AppModule {}
 
 ### Connection and graceful shutdown
 
-By default, this module doesn't manage client connection on application bootstrap or shutdown. You can read more about lifecycle hooks on the NestJS [documentation page](https://docs.nestjs.com/fundamentals/lifecycle-events#application-shutdown). 
+By default, this module doesn't manage client connection on application bootstrap or shutdown. You can read more about lifecycle hooks on the NestJS [documentation page](https://docs.nestjs.com/fundamentals/lifecycle-events#application-shutdown).
 
 ```typescript
 // main.ts
 const app = await NestFactory.create(AppModule);
 
-app.useLogger(logger);
+// Starts listening for shutdown hooks
 app.enableShutdownHooks(); // <<<
 
-app.setGlobalPrefix('api');
-app.enableVersioning({
-    type: VersioningType.URI,
-});
-
-await app.listen(appConfig.port, '0.0.0.0');
+await app.listen(process.env.PORT ?? 3000);
 ```
 
 ```typescript
@@ -104,10 +100,10 @@ import { Redis } from 'ioredis';
 
 @Injectable()
 export class AppBootstrap implements OnApplicationShutdown {
-    constructor(@InjectRedisClient() private readonly redisClient: Client) {}
+    constructor(@InjectRedisClient() private readonly client: Client) {}
 
     public async onApplicationShutdown(): Promise<void> {
-        await this.redisClient.quit();
+        await this.client.quit();
     }
 }
 ```

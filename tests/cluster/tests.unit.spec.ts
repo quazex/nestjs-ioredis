@@ -107,7 +107,6 @@ describe('RedisCluster > Unit', () => {
                 RedisClusterModule.forRootAsync({
                     imports: [ConfigModule],
                     useExisting: RedisClusterConfigProvider,
-                    name: faker.string.alpha({ length: 10 }),
                 }),
             ],
         });

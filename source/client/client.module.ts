@@ -6,9 +6,9 @@ import { RedisClientProviders } from './client.providers';
 @Global()
 @Module({})
 export class RedisClientModule {
-    public static forRoot({ name, ...options }: RedisOptions & { name?: string }): DynamicModule {
+    public static forRoot(options: RedisOptions): DynamicModule {
         const optionsProvider = RedisClientProviders.getOptions(options);
-        const clientProvider = RedisClientProviders.getClient(name);
+        const clientProvider = RedisClientProviders.getClient();
 
         const dynamicModule: DynamicModule = {
             module: RedisClientModule,
@@ -26,7 +26,7 @@ export class RedisClientModule {
 
     public static forRootAsync(asyncOptions: RedisClientAsyncOptions): DynamicModule {
         const optionsProvider = RedisClientProviders.getAsyncOptions(asyncOptions);
-        const clientProvider = RedisClientProviders.getClient(asyncOptions.name);
+        const clientProvider = RedisClientProviders.getClient();
 
         const dynamicModule: DynamicModule = {
             module: RedisClientModule,

@@ -10,23 +10,19 @@ describe('Redis > E2E', () => {
     afterAll(tModule.close.bind(tModule));
 
     test('Check connection', async() => {
-        const service = tModule.getService();
-        const isHealth = await service.ping();
-
+        const isHealth = await tModule.service.ping();
         expect(isHealth).toBe(true);
     });
 
     test('Check write/read operations', async() => {
-        const service = tModule.getService();
-
         const document: TestingDocument = {
             id: faker.string.uuid(),
             name: faker.person.firstName(),
             updated_at: new Date(),
         };
 
-        await service.write(document);
-        const reply = await service.read(document.id);
+        await tModule.service.write(document);
+        const reply = await tModule.service.read(document.id);
 
         expect(reply).toBeDefined();
         expect(reply?.name).toBe(document.name);

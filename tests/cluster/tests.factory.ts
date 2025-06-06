@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
 import { Cluster } from 'ioredis';
 import { RedisClusterModule } from '../../source/cluster/cluster.module';
-import { RedisClusterUtilities } from '../../source/cluster/cluster.utilities';
+import { RedisClusterTokens } from '../../source/cluster/cluster.tokens';
 import { TestingDocument, TestingRedisService } from './tests.types';
 
 export class TestingRedisClusterFactory {
@@ -41,7 +41,7 @@ export class TestingRedisClusterFactory {
                 },
             }),
             inject: [
-                RedisClusterUtilities.getConnectionToken(),
+                RedisClusterTokens.getConnection(),
             ],
         };
 

@@ -1,11 +1,11 @@
 import { FactoryProvider, Provider, ValueProvider } from '@nestjs/common';
 import { Redis, RedisOptions } from 'ioredis';
 import { RedisClientAsyncOptions, RedisClientOptionsFactory } from './client.interfaces';
-import { RedisClientUtilities } from './client.utilities';
+import { RedisClientTokens } from './client.tokens';
 
 export class RedisClientProviders {
-    public static getOptions(options: RedisOptions & { name?: string }): ValueProvider<RedisOptions> {
-        const optionsToken = RedisClientUtilities.getOptionsToken(options.name);
+    public static getOptions(options: RedisOptions): ValueProvider<RedisOptions> {
+        const optionsToken = RedisClientTokens.getOptions();
         return {
             provide: optionsToken,
             useValue: options,
@@ -13,7 +13,7 @@ export class RedisClientProviders {
     }
 
     public static getAsyncOptions(options: RedisClientAsyncOptions): Provider<RedisOptions> {
-        const optionsToken = RedisClientUtilities.getOptionsToken(options.name);
+        const optionsToken = RedisClientTokens.getOptions();
         if (options.useFactory) {
             return {
                 provide: optionsToken,
@@ -34,9 +34,9 @@ export class RedisClientProviders {
         throw new Error('Must provide useFactory or useClass');
     }
 
-    public static getClient(name?: string): FactoryProvider<Redis> {
-        const optionsToken = RedisClientUtilities.getOptionsToken(name);
-        const connectionToken = RedisClientUtilities.getConnectionToken(name);
+    public static getClient(): FactoryProvider<Redis> {
+        const optionsToken = RedisClientTokens.getOptions();
+        const connectionToken = RedisClientTokens.getConnection();
         return {
             provide: connectionToken,
             useFactory: (options: RedisOptions) => new Redis(options),

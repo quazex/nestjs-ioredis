@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
-import { RedisClusterUtilities } from './cluster.utilities';
+import { RedisClusterTokens } from './cluster.tokens';
 
-export const InjectRedisCluster = (name?: string): ReturnType<typeof Inject> => {
-    const token = RedisClusterUtilities.getConnectionToken(name);
+export const InjectRedisCluster = (): ReturnType<typeof Inject> => {
+    const token = RedisClusterTokens.getConnection();
     return Inject(token);
 };

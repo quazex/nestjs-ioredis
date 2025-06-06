@@ -6,9 +6,9 @@ import { RedisClusterConfig } from './cluster.types';
 @Global()
 @Module({})
 export class RedisClusterModule {
-    public static forRoot({ name, ...options }: RedisClusterConfig & { name?: string }): DynamicModule {
+    public static forRoot(options: RedisClusterConfig): DynamicModule {
         const optionsProvider = RedisClusterProviders.getConfig(options);
-        const clusterProvider = RedisClusterProviders.getCluster(name);
+        const clusterProvider = RedisClusterProviders.getCluster();
 
         const dynamicModule: DynamicModule = {
             module: RedisClusterModule,
@@ -26,7 +26,7 @@ export class RedisClusterModule {
 
     public static forRootAsync(asyncOptions: RedisClusterAsyncConfig): DynamicModule {
         const optionsProvider = RedisClusterProviders.getAsyncConfig(asyncOptions);
-        const clusterProvider = RedisClusterProviders.getCluster(asyncOptions.name);
+        const clusterProvider = RedisClusterProviders.getCluster();
 
         const dynamicModule: DynamicModule = {
             module: RedisClusterModule,

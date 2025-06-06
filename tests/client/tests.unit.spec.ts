@@ -89,7 +89,6 @@ describe('RedisClient > Unit', () => {
                 RedisClientModule.forRootAsync({
                     imports: [ConfigModule],
                     useExisting: RedisClientConfig,
-                    name: faker.string.alpha({ length: 10 }),
                 }),
             ],
         });

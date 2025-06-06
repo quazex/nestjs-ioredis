@@ -1,12 +1,12 @@
 import { FactoryProvider, Provider, ValueProvider } from '@nestjs/common';
 import { Cluster } from 'ioredis';
 import { RedisClusterAsyncConfig, RedisClusterConfigFactory } from './cluster.interfaces';
+import { RedisClusterTokens } from './cluster.tokens';
 import { RedisClusterConfig } from './cluster.types';
-import { RedisClusterUtilities } from './cluster.utilities';
 
 export class RedisClusterProviders {
-    public static getConfig(options: RedisClusterConfig & { name?: string }): ValueProvider<RedisClusterConfig> {
-        const optionsToken = RedisClusterUtilities.getConfigToken(options.name);
+    public static getConfig(options: RedisClusterConfig): ValueProvider<RedisClusterConfig> {
+        const optionsToken = RedisClusterTokens.getConfig();
         return {
             provide: optionsToken,
             useValue: options,
@@ -14,7 +14,7 @@ export class RedisClusterProviders {
     }
 
     public static getAsyncConfig(options: RedisClusterAsyncConfig): Provider<RedisClusterConfig> {
-        const optionsToken = RedisClusterUtilities.getConfigToken(options.name);
+        const optionsToken = RedisClusterTokens.getConfig();
         if (options.useFactory) {
             return {
                 provide: optionsToken,
@@ -35,9 +35,9 @@ export class RedisClusterProviders {
         throw new Error('Must provide useFactory or useClass');
     }
 
-    public static getCluster(name?: string): FactoryProvider<Cluster> {
-        const configToken = RedisClusterUtilities.getConfigToken(name);
-        const connectionToken = RedisClusterUtilities.getConnectionToken(name);
+    public static getCluster(): FactoryProvider<Cluster> {
+        const configToken = RedisClusterTokens.getConfig();
+        const connectionToken = RedisClusterTokens.getConnection();
         return {
             provide: connectionToken,
             useFactory: (config: RedisClusterConfig) => new Cluster(config.nodes, config.options),

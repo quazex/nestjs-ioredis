@@ -7,18 +7,22 @@ import { RedisClientOptionsFactory } from '../../source/client/client.interfaces
 import { RedisClientModule } from '../../source/client/client.module';
 
 jest.mock('ioredis', () => ({
-    Redis: jest.fn(),
+    Redis: jest.fn().mockReturnValue({
+        quit: jest.fn(),
+    }),
 }));
 
 describe('RedisClient > Unit', () => {
     test('forRoot()', async() => {
+        const host = faker.internet.domainName();
+        const port = faker.internet.port();
+        const password = faker.internet.password();
+        const db = faker.number.int({ min: 0, max: 10 });
+
         const tBuilder = Test.createTestingModule({
             imports: [
                 RedisClientModule.forRoot({
-                    host: faker.internet.domainName(),
-                    port: faker.internet.port(),
-                    password: faker.internet.password(),
-                    db: faker.number.int({ min: 0, max: 10 }),
+                    uri: `redis://:${password}@${host}:${port}/${db}`,
                 }),
             ],
         });

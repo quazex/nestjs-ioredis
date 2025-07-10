@@ -1,10 +1,11 @@
 import { FactoryProvider, Provider, ValueProvider } from '@nestjs/common';
-import { Redis, RedisOptions } from 'ioredis';
+import { Redis } from 'ioredis';
 import { RedisClientAsyncOptions, RedisClientOptionsFactory } from './client.interfaces';
 import { RedisClientTokens } from './client.tokens';
+import { RedisClientConfig } from './client.types';
 
 export class RedisClientProviders {
-    public static getOptions(options: RedisOptions): ValueProvider<RedisOptions> {
+    public static getOptions(options: RedisClientConfig): ValueProvider<RedisClientConfig> {
         const optionsToken = RedisClientTokens.getOptions();
         return {
             provide: optionsToken,
@@ -12,7 +13,7 @@ export class RedisClientProviders {
         };
     }
 
-    public static getAsyncOptions(options: RedisClientAsyncOptions): Provider<RedisOptions> {
+    public static getAsyncOptions(options: RedisClientAsyncOptions): Provider<RedisClientConfig> {
         const optionsToken = RedisClientTokens.getOptions();
         if (options.useFactory) {
             return {
@@ -24,7 +25,7 @@ export class RedisClientProviders {
         if (options.useExisting) {
             return {
                 provide: optionsToken,
-                useFactory: async(factory: RedisClientOptionsFactory): Promise<RedisOptions> => {
+                useFactory: async(factory: RedisClientOptionsFactory): Promise<RedisClientConfig> => {
                     const client = await factory.createRedisClientOptions();
                     return client;
                 },
@@ -39,7 +40,12 @@ export class RedisClientProviders {
         const connectionToken = RedisClientTokens.getConnection();
         return {
             provide: connectionToken,
-            useFactory: (options: RedisOptions) => new Redis(options),
+            useFactory: ({ uri, ...options }: RedisClientConfig): Redis => {
+                if (typeof uri === 'string') {
+                    return new Redis(uri, options);
+                }
+                return new Redis(options);
+            },
             inject: [optionsToken],
         };
     }

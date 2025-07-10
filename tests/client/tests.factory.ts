@@ -21,9 +21,6 @@ export class TestingRedisClientFactory {
         const tProvider: FactoryProvider<TestingRedisService> = {
             provide: this._token,
             useFactory: (client: Redis) => ({
-                onApplicationShutdown: async(): Promise<void> => {
-                    await client.quit();
-                },
                 write: async(document): Promise<void> => {
                     const value = JSON.stringify(document);
                     await client.set(document.id, value);

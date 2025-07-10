@@ -80,7 +80,7 @@ export class AppModule {}
 
 ### Connection and graceful shutdown
 
-By default, this module doesn't manage client connection on application bootstrap or shutdown. You can read more about lifecycle hooks on the NestJS [documentation page](https://docs.nestjs.com/fundamentals/lifecycle-events#application-shutdown).
+You need to enable shutdown hooks to activate connection management when the application is shut down. You can read more about lifecycle hooks on the NestJS [documentation page](https://docs.nestjs.com/fundamentals/lifecycle-events#application-shutdown).
 
 ```typescript
 // main.ts
@@ -90,22 +90,6 @@ const app = await NestFactory.create(AppModule);
 app.enableShutdownHooks(); // <<<
 
 await app.listen(process.env.PORT ?? 3000);
-```
-
-```typescript
-// app.bootstrap.ts
-import { Injectable, OnApplicationShutdown } from '@nestjs/common';
-import { InjectRedisClient } from '@quazex/nestjs-ioredis';
-import { Redis } from 'ioredis';
-
-@Injectable()
-export class AppBootstrap implements OnApplicationShutdown {
-    constructor(@InjectRedisClient() private readonly client: Client) {}
-
-    public async onApplicationShutdown(): Promise<void> {
-        await this.client.quit();
-    }
-}
 ```
 
 ## License

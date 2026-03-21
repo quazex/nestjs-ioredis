@@ -1,30 +1,30 @@
-import { faker } from '@faker-js/faker';
-import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import { TestingRedisClientFactory } from './tests.factory';
-import { TestingDocument } from './tests.types';
+import { faker } from '@faker-js/faker'
+import { afterAll, beforeAll, describe, expect, test } from '@jest/globals'
+import { TestingRedisClientFactory } from './tests.factory'
+import { TTestingDocument } from './tests.types'
 
 describe('Redis Standalone > E2E', () => {
-    const tModule = new TestingRedisClientFactory();
+  const tModule = new TestingRedisClientFactory()
 
-    beforeAll(tModule.init.bind(tModule));
-    afterAll(tModule.close.bind(tModule));
+  beforeAll(tModule.init.bind(tModule))
+  afterAll(tModule.close.bind(tModule))
 
-    test('Check connection', async() => {
-        const isHealth = await tModule.service.ping();
-        expect(isHealth).toBe(true);
-    });
+  test('Check connection', async() => {
+    const isHealth = await tModule.service.ping()
+    expect(isHealth).toBe(true)
+  })
 
-    test('Check write/read operations', async() => {
-        const document: TestingDocument = {
-            id: faker.string.uuid(),
-            name: faker.person.firstName(),
-            updated_at: new Date(),
-        };
+  test('Check write/read operations', async() => {
+    const document: TTestingDocument = {
+      id: faker.string.uuid(),
+      name: faker.person.firstName(),
+      updated_at: new Date(),
+    }
 
-        await tModule.service.write(document);
-        const reply = await tModule.service.read(document.id);
+    await tModule.service.write(document)
+    const reply = await tModule.service.read(document.id)
 
-        expect(reply).toBeDefined();
-        expect(reply?.name).toBe(document.name);
-    });
-});
+    expect(reply).toBeDefined()
+    expect(reply?.name).toBe(document.name)
+  })
+})

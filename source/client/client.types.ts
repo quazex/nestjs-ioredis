@@ -1,5 +1,5 @@
-import { RedisOptions } from 'ioredis';
+import { RedisOptions } from 'ioredis'
 
 export interface RedisClientConfig extends RedisOptions {
-    uri?: string;
+  uri?: string
 }

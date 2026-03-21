@@ -1,6 +1,6 @@
-import { ClusterNode, ClusterOptions } from 'ioredis';
+import { ClusterNode, ClusterOptions } from 'ioredis'
 
 export interface RedisClusterConfig {
-    nodes: ClusterNode[];
-    options?: ClusterOptions;
+  nodes: ClusterNode[]
+  options?: ClusterOptions
 }
